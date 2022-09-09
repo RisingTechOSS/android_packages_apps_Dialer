@@ -28,5 +28,4 @@
 
   <color name="nav_item">@*android:color/system_neutral2_1000</color>
   <color name="nav_item_selected">@*android:color/system_neutral2_1000</color>
-   <color name="ic_launcher_background">#2D81FE</color>
 </resources>
