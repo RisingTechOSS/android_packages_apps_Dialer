@@ -26,10 +26,6 @@ import android.graphics.Point;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -83,6 +79,7 @@ import com.android.incallui.video.protocol.VideoCallScreenDelegateFactory;
 import com.android.incallui.videosurface.bindings.VideoSurfaceBindings;
 import com.android.incallui.videosurface.protocol.VideoSurfaceTexture;
 import com.android.incallui.videotech.utils.VideoUtils;
+import com.google.android.renderscript.Toolkit;
 
 /** Contains UI elements for a video call. */
 
@@ -1235,7 +1232,7 @@ public class VideoCallFragment extends Fragment
     // TODO(mdooley): When the view is first displayed after a rotation the bitmap is empty
     // and thus this blur has no effect.
     // This call can take 100 milliseconds.
-    blur(getContext(), bitmap, blurRadius);
+    bitmap = Toolkit.INSTANCE.blur(bitmap, Math.round(blurRadius));
 
     // TODO(mdooley): Figure out why only have to apply the transform in landscape mode
     if (width > height) {
@@ -1314,21 +1311,6 @@ public class VideoCallFragment extends Fragment
               }
             })
         .start();
-  }
-
-  private static void blur(Context context, Bitmap image, float blurRadius) {
-    RenderScript renderScript = RenderScript.create(context);
-    ScriptIntrinsicBlur blurScript =
-        ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
-    Allocation allocationIn = Allocation.createFromBitmap(renderScript, image);
-    Allocation allocationOut = Allocation.createFromBitmap(renderScript, image);
-    blurScript.setRadius(blurRadius);
-    blurScript.setInput(allocationIn);
-    blurScript.forEach(allocationOut);
-    allocationOut.copyTo(image);
-    blurScript.destroy();
-    allocationIn.destroy();
-    allocationOut.destroy();
   }
 
   @Override
